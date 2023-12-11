@@ -1,0 +1,29 @@
+.loader__icon {
+  font-family: Consolas, Menlo, Monaco, monospace;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.loader__icon:before {
+  content: '{';
+  display: inline-block;
+  animation: icon-pulse 0.4s alternate infinite ease-in-out;
+}
+
+.loader__icon:after {
+  content: '}';
+  display: inline-block;
+  animation: icon-pulse 0.4s 0.3s alternate infinite ease-in-out;
+}
+
+@keyframes icon-pulse {
+  to {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+}
+
+.loader__wrapper small {
+  display: block;
+  font-weight: 500;
+}
