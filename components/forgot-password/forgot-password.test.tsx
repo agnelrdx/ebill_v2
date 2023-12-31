@@ -25,12 +25,12 @@ describe('ForgotPassword', () => {
     const para = screen.getByText(
       `Please provide the email address that you used when you signed up for your account. We will send you an email that will allow you to reset your password.`
     );
-    const inputText = screen.getByRole('textbox');
+    const inputText = screen.getByTestId('email');
     const link = screen.getByRole('link', {
       name: 'Return to Login',
     });
     const button = screen.getByRole('button', {
-      name: 'Reset Password',
+      name: 'Request Reset Password',
     });
 
     expect(heading).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe('ForgotPassword', () => {
     render(<ForgotPassword />);
 
     const button = screen.getByRole('button', {
-      name: 'Reset Password',
+      name: 'Request Reset Password',
     });
     fireEvent.click(button);
 
@@ -82,9 +82,9 @@ describe('ForgotPassword', () => {
 
     render(<ForgotPassword />);
     const button = screen.getByRole('button', {
-      name: 'Reset Password',
+      name: 'Request Reset Password',
     });
-    const inputText = screen.getByRole('textbox');
+    const inputText = screen.getByTestId('email');
     fireEvent.change(inputText, { target: { value: 'test@gmail.com' } });
     fireEvent.click(button);
 
@@ -104,7 +104,7 @@ describe('ForgotPassword', () => {
 
     render(<ForgotPassword />);
     const button = screen.getByRole('button', {
-      name: 'Reset Password',
+      name: 'Request Reset Password',
     });
     const alert = screen.getByRole('alert');
 

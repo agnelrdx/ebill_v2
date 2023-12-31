@@ -1,13 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import classnames from 'classnames';
-import { use, useEffect } from 'react';
 
-import { VALID_EMAIL_ADDRESS_REGEX, cn } from 'utils';
+import { VALID_PASSWORD_REGEX, cn } from 'utils';
 import usePostApi from 'hooks/usePostApi';
 import {
   Card,
@@ -20,20 +17,17 @@ import {
 import { Input } from 'components/ui/input';
 import { Button } from 'components/ui/button';
 
-type FormData = {
-  email: string;
-  password: string;
-};
-
 type CardProps = React.ComponentProps<typeof Card>;
 
-export default function Login({ className, ...props }: CardProps) {
-  const router = useRouter();
-  const { apiError, apiSuccess, _post } = usePostApi();
-  const { handleSubmit, control, formState } = useForm<FormData>({
+export default function UpdatePassword({ className, ...props }: CardProps) {
+  const { apiSuccess, apiError, _post } = usePostApi();
+  const { handleSubmit, control, formState, getValues } = useForm<{
+    password: string;
+    newPassword: string;
+  }>({
     defaultValues: {
-      email: '',
       password: '',
+      newPassword: '',
     },
   });
   const formSubmitted =
@@ -42,90 +36,94 @@ export default function Login({ className, ...props }: CardProps) {
       formState.isSubmitSuccessful) &&
     !apiError;
 
-  useEffect(() => {
-    if (apiSuccess) router.push('/dashboard');
-  }, [apiSuccess, router]);
-
-  const onSubmit = async ({ email, password }: FormData) => {
-    await _post('/api/auth/login', {
-      email,
-      password,
+  const onSubmit = async ({ newPassword }: { newPassword: string }) => {
+    await _post('/api/auth/update-password', {
+      password: newPassword,
     });
   };
 
   return (
     <Card className={cn('w-[380px]', className)} {...props}>
       <CardHeader>
-        <Image
-          src="/img/logo.png"
-          alt="Ebill"
-          width={60}
-          height={60}
-          className="mb-8 mx-auto"
-          priority={true}
-        />
-        <CardTitle>Welcome to Ebill</CardTitle>
-        <CardDescription>Please sign-in to your account</CardDescription>
+        <CardTitle>Update Password</CardTitle>
+        <CardDescription>
+          Please update your password. The password must be a minimum of 6
+          characters long and include a combination of an uppercase letter, a
+          lowercase letter, a special character, and a numeric digit.
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <Controller
-          name="email"
-          control={control}
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              value={value}
-              onChange={onChange}
-              className={classnames('mb-3', {
-                ['border-red-500']: error,
-              })}
-              data-testid="email"
-            />
-          )}
-          rules={{
-            required: true,
-            pattern: VALID_EMAIL_ADDRESS_REGEX,
-          }}
-        />
         <Controller
           name="password"
           control={control}
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <Input
               type="password"
-              placeholder="Enter your password"
+              placeholder="Enter your new password"
               value={value}
               onChange={onChange}
-              autoComplete="off"
-              className={classnames('mb-1', {
+              className={classnames('mb-3', {
                 ['border-red-500']: error,
               })}
               data-testid="password"
+              disabled={apiSuccess}
             />
           )}
           rules={{
             required: true,
+            pattern: VALID_PASSWORD_REGEX,
+            minLength: 6,
           }}
         />
-        <Link
-          href="/forgot-password"
-          className="text-sm inline-block mb-2 hover:underline"
-        >
-          Forgot Password?
+        <Controller
+          name="newPassword"
+          control={control}
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <Input
+              type="password"
+              placeholder="Confirm your password"
+              value={value}
+              onChange={onChange}
+              className={classnames('mb-1', {
+                ['border-red-500']: error,
+              })}
+              data-testid="newPassword"
+              disabled={apiSuccess}
+            />
+          )}
+          rules={{
+            required: true,
+            pattern: VALID_PASSWORD_REGEX,
+            minLength: 6,
+            validate: (value) => {
+              const { password } = getValues();
+              return password === value;
+            },
+          }}
+        />
+        <Link href="/" className="text-sm inline-block mb-2 hover:underline">
+          Return to Login
         </Link>
       </CardContent>
       <CardFooter className="flex-col">
         <Button
           className="w-full"
-          disabled={formSubmitted}
+          disabled={formSubmitted || apiSuccess}
           onClick={handleSubmit(onSubmit)}
         >
-          {formSubmitted ? 'Loading...' : 'Login'}
+          {formSubmitted && !apiSuccess ? 'Loading...' : 'Update Password'}
         </Button>
         {apiError && (
           <div className="alert__error" role="alert">
-            Invalid email or password. Please try again.
+            System error. Please try again.
+          </div>
+        )}
+        {apiSuccess && (
+          <div className="alert__success" role="alert">
+            Password updated successfully. Please{' '}
+            <Link href="/" className="inline-block hover:underline">
+              login now.
+            </Link>
           </div>
         )}
       </CardFooter>

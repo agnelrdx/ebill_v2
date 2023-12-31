@@ -1,11 +1,24 @@
-import { signOut } from 'firebase/auth';
-import { firebaseAuth } from 'utils/firebase-config';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 
 export async function POST() {
   try {
-    await signOut(firebaseAuth);
-    cookies().delete('EBILL_AUTH');
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({
+      cookies: () => cookieStore,
+    });
+
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      return new Response(JSON.stringify({ data: null, error: true }), {
+        status: 500,
+        headers: {
+          'content-type': 'application/json',
+        },
+      });
+    }
+
     return new Response(
       JSON.stringify({
         data: {

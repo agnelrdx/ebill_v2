@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
 import classnames from 'classnames';
+
 import { VALID_EMAIL_ADDRESS_REGEX, cn } from 'utils';
 import usePostApi from 'hooks/usePostApi';
 import {
@@ -18,7 +19,7 @@ import { Button } from 'components/ui/button';
 
 type CardProps = React.ComponentProps<typeof Card>;
 
-export default function Login({ className, ...props }: CardProps) {
+export default function ForgotPassword({ className, ...props }: CardProps) {
   const { apiSuccess, apiError, _post } = usePostApi();
   const { handleSubmit, control, formState } = useForm<{ email: string }>({
     defaultValues: {
@@ -79,7 +80,9 @@ export default function Login({ className, ...props }: CardProps) {
           disabled={formSubmitted || apiSuccess}
           onClick={handleSubmit(onSubmit)}
         >
-          {formSubmitted && !apiSuccess ? 'Loading...' : 'Reset Password'}
+          {formSubmitted && !apiSuccess
+            ? 'Loading...'
+            : 'Request Reset Password'}
         </Button>
         {apiError && (
           <div className="alert__error" role="alert">

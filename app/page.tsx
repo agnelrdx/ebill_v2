@@ -1,12 +1,7 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import Login from 'components/login/login';
 
-export default function Home() {
+export default async function HomePage() {
   const year = new Date().getFullYear();
-  const isLoggedIn = cookies().get('EBILL_AUTH');
-
-  if (isLoggedIn) redirect('/dashboard');
 
   return (
     <main>

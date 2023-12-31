@@ -4,7 +4,10 @@ const usePostApi = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
 
-  const _post = async (url: string, body: Record<string, string>) => {
+  const _post = async (
+    url: string,
+    body: Record<string, string>
+  ): Promise<Record<string, unknown>> => {
     setError(false);
     setSuccess(false);
 

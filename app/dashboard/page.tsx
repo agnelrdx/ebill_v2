@@ -1,6 +1,3 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-
 import { Button } from 'components/ui/button';
 import {
   Card,
@@ -12,15 +9,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'components/ui/tabs';
 import { CalendarDateRangePicker } from 'components/date-range-picker';
 import Navbar from 'components/navbar/navbar';
-
 import { Overview } from 'components/overview';
 import { RecentSales } from 'components/recent-sales';
 
-export default function Dashboard() {
-  const isLoggedIn = cookies().get('EBILL_AUTH');
-
-  if (!isLoggedIn) redirect('/');
-
+export default function DashboardPage() {
   return (
     <>
       <Navbar />
