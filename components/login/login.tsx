@@ -5,10 +5,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import classnames from 'classnames';
-import { use, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { VALID_EMAIL_ADDRESS_REGEX, cn } from 'utils';
-import usePostApi from 'hooks/usePostApi';
 import {
   Card,
   CardContent,
@@ -19,6 +18,7 @@ import {
 } from 'components/ui/card';
 import { Input } from 'components/ui/input';
 import { Button } from 'components/ui/button';
+import useLogin from 'hooks/useLogin';
 
 type FormData = {
   email: string;
@@ -29,28 +29,20 @@ type CardProps = React.ComponentProps<typeof Card>;
 
 export default function Login({ className, ...props }: CardProps) {
   const router = useRouter();
-  const { apiError, apiSuccess, _post } = usePostApi();
-  const { handleSubmit, control, formState } = useForm<FormData>({
+  const { mutate, isSuccess, isError, isPending } = useLogin();
+  const { handleSubmit, control } = useForm<FormData>({
     defaultValues: {
       email: '',
       password: '',
     },
   });
-  const formSubmitted =
-    (formState.isSubmitting ||
-      formState.isLoading ||
-      formState.isSubmitSuccessful) &&
-    !apiError;
 
   useEffect(() => {
-    if (apiSuccess) router.push('/dashboard');
-  }, [apiSuccess, router]);
+    if (isSuccess) router.push('/dashboard');
+  }, [isSuccess, router]);
 
   const onSubmit = async ({ email, password }: FormData) => {
-    await _post('/api/auth/login', {
-      email,
-      password,
-    });
+    mutate({ email, password });
   };
 
   return (
@@ -118,12 +110,12 @@ export default function Login({ className, ...props }: CardProps) {
       <CardFooter className="flex-col">
         <Button
           className="w-full"
-          disabled={formSubmitted}
+          disabled={isPending}
           onClick={handleSubmit(onSubmit)}
         >
-          {formSubmitted ? 'Loading...' : 'Login'}
+          {isPending ? 'Loading...' : 'Login'}
         </Button>
-        {apiError && (
+        {isError && (
           <div className="alert__error" role="alert">
             Invalid email or password. Please try again.
           </div>

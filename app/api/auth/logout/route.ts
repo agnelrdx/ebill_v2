@@ -1,13 +1,10 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { type NextRequest, NextResponse } from 'next/server';
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({
-      cookies: () => cookieStore,
-    });
-
+    const supabase = createRouteHandlerClient({ cookies });
     const { error } = await supabase.auth.signOut();
 
     if (error) {
@@ -19,21 +16,9 @@ export async function POST() {
       });
     }
 
-    return new Response(
-      JSON.stringify({
-        data: {
-          status: true,
-          message: 'User logged out.',
-        },
-        error: false,
-      }),
-      {
-        status: 200,
-        headers: {
-          'content-type': 'application/json',
-        },
-      }
-    );
+    return NextResponse.redirect(new URL('/', req.url), {
+      status: 302,
+    });
   } catch (e) {
     return new Response(JSON.stringify({ data: null, error: true }), {
       status: 500,

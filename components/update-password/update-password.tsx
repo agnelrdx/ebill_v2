@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
 import classnames from 'classnames';
+import { useSearchParams } from 'next/navigation';
 
 import { VALID_PASSWORD_REGEX, cn } from 'utils';
 import usePostApi from 'hooks/usePostApi';
@@ -20,6 +21,8 @@ import { Button } from 'components/ui/button';
 type CardProps = React.ComponentProps<typeof Card>;
 
 export default function UpdatePassword({ className, ...props }: CardProps) {
+  const searchParams = useSearchParams();
+  const code = searchParams.get('code');
   const { apiSuccess, apiError, _post } = usePostApi();
   const { handleSubmit, control, formState, getValues } = useForm<{
     password: string;
@@ -39,6 +42,7 @@ export default function UpdatePassword({ className, ...props }: CardProps) {
   const onSubmit = async ({ newPassword }: { newPassword: string }) => {
     await _post('/api/auth/update-password', {
       password: newPassword,
+      nonce: code!,
     });
   };
 

@@ -4,12 +4,14 @@ import type { NextRequest } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const body: { email: string } = await request.json();
+    const body: { password: string; nonce: string } = await request.json();
     const supabase = createRouteHandlerClient({ cookies });
 
-    const { error } = await supabase.auth.resetPasswordForEmail(body.email, {
-      redirectTo: `${request.nextUrl.origin}/update-password`,
+    const { data, error } = await supabase.auth.updateUser({
+      password: body.password,
     });
+
+    console.log('*****data', data, error, body.nonce);
 
     if (error) {
       return new Response(JSON.stringify({ data: null, error: true }), {
@@ -24,7 +26,7 @@ export async function POST(request: NextRequest) {
       JSON.stringify({
         data: {
           status: true,
-          message: 'Email sent.',
+          message: 'Password updated successfully.',
         },
         error: false,
       }),

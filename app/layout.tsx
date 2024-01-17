@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 
+import QueryProvider from 'utils/query-provider';
 import { ThemeProvider } from 'components/ui/theme-provider';
 import FloatingThemeSwitcher from 'components/ui/floating-theme-switcher';
 import './globals.css';
@@ -29,8 +30,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <FloatingThemeSwitcher />
-
-          {children}
+          <QueryProvider>{children}</QueryProvider>
         </ThemeProvider>
       </body>
     </html>

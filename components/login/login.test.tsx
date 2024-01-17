@@ -1,23 +1,26 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import usePostApi from 'hooks/usePostApi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Login from './login';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-jest.mock('hooks/usePostApi');
-
-const mockUsePostApi = usePostApi as jest.MockedFunction<typeof usePostApi>;
-
 describe('Login', () => {
-  it('renders a login form', () => {
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: false,
-      _post: jest.fn(),
-    }));
-    render(<Login />);
+  it.only('renders a login form', () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    render(<Login />, { wrapper });
 
     const img = screen.getByRole('img', {
       name: /Ebill/i,
