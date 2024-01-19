@@ -3,7 +3,7 @@ import { NextResponse, NextRequest } from 'next/server';
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-
+  const homePaths = ['/', '/forgot-password'];
   const supabase = createMiddlewareClient({ req, res });
 
   const {
@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Redirect to dashboard is session is active
-  if (req.nextUrl.pathname === '/' && session) {
+  if (homePaths.includes(req.nextUrl.pathname) && session) {
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 

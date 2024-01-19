@@ -14,7 +14,6 @@ const customJestConfig = {
   globals: {
     'ts-jest': {
       tsconfig: './tsconfig.json',
-      // other ts-jest options...
       useESM: true,
     },
   },

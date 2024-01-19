@@ -1,13 +1,24 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import useLogin from 'hooks/useLogin';
 import Login from './login';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
+jest.mock('hooks/useLogin');
+
+const mockUseLogin = useLogin as jest.MockedFunction<any>;
+
 describe('Login', () => {
-  it.only('renders a login form', () => {
+  it('renders a login form', () => {
+    mockUseLogin.mockImplementation(() => ({
+      mutate: jest.fn(),
+      isSuccess: false,
+      isError: false,
+      isPending: false,
+    }));
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
@@ -48,11 +59,12 @@ describe('Login', () => {
   });
 
   it('should not submit the form if the required fields are empty', () => {
-    const _postMock = jest.fn();
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: false,
-      _post: _postMock,
+    const mockMutate = jest.fn();
+    mockUseLogin.mockImplementation(() => ({
+      mutate: mockMutate,
+      isSuccess: false,
+      isError: false,
+      isPending: false,
     }));
 
     render(<Login />);
@@ -62,14 +74,15 @@ describe('Login', () => {
     });
     fireEvent.click(button);
 
-    expect(_postMock).not.toHaveBeenCalled();
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 
   it('should render alert if the api fails', () => {
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: true,
-      _post: jest.fn(),
+    mockUseLogin.mockImplementation(() => ({
+      mutate: jest.fn(),
+      isSuccess: false,
+      isError: true,
+      isPending: false,
     }));
 
     render(<Login />);
@@ -82,11 +95,12 @@ describe('Login', () => {
   });
 
   it('should call the api after successful form submission', async () => {
-    const _postMock = jest.fn();
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: false,
-      _post: _postMock,
+    const mockMutate = jest.fn();
+    mockUseLogin.mockImplementation(() => ({
+      mutate: mockMutate,
+      isSuccess: false,
+      isError: false,
+      isPending: false,
     }));
 
     render(<Login />);
@@ -100,7 +114,7 @@ describe('Login', () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(_postMock).toHaveBeenCalledWith('/api/auth/login', {
+      expect(mockMutate).toHaveBeenCalledWith({
         email: 'test@gmail.com',
         password: '12345',
       });

@@ -5,7 +5,6 @@ import { useForm, Controller } from 'react-hook-form';
 import classnames from 'classnames';
 
 import { VALID_EMAIL_ADDRESS_REGEX, cn } from 'utils';
-import usePostApi from 'hooks/usePostApi';
 import {
   Card,
   CardContent,
@@ -16,26 +15,20 @@ import {
 } from 'components/ui/card';
 import { Input } from 'components/ui/input';
 import { Button } from 'components/ui/button';
+import useForgotPassword from 'hooks/useForgotPassword';
 
 type CardProps = React.ComponentProps<typeof Card>;
 
 export default function ForgotPassword({ className, ...props }: CardProps) {
-  const { apiSuccess, apiError, _post } = usePostApi();
+  const { mutate, isSuccess, isError, isPending } = useForgotPassword();
   const { handleSubmit, control, formState } = useForm<{ email: string }>({
     defaultValues: {
       email: '',
     },
   });
-  const formSubmitted =
-    (formState.isSubmitting ||
-      formState.isLoading ||
-      formState.isSubmitSuccessful) &&
-    !apiError;
 
   const onSubmit = async ({ email }: { email: string }) => {
-    await _post('/api/auth/forgot-password', {
-      email,
-    });
+    mutate({ email });
   };
 
   return (
@@ -62,7 +55,7 @@ export default function ForgotPassword({ className, ...props }: CardProps) {
                 ['border-red-500']: error,
               })}
               data-testid="email"
-              disabled={apiSuccess}
+              disabled={isSuccess}
             />
           )}
           rules={{
@@ -77,19 +70,17 @@ export default function ForgotPassword({ className, ...props }: CardProps) {
       <CardFooter className="flex-col">
         <Button
           className="w-full"
-          disabled={formSubmitted || apiSuccess}
+          disabled={isPending || isSuccess}
           onClick={handleSubmit(onSubmit)}
         >
-          {formSubmitted && !apiSuccess
-            ? 'Loading...'
-            : 'Request Reset Password'}
+          {isPending ? 'Loading...' : 'Request Reset Password'}
         </Button>
-        {apiError && (
+        {isError && (
           <div className="alert__error" role="alert">
             Email does not exist. Please try again.
           </div>
         )}
-        {apiSuccess && (
+        {isSuccess && (
           <div className="alert__success" role="alert">
             Password reset email sent. Please check your email.
           </div>

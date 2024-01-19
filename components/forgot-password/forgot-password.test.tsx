@@ -1,21 +1,22 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import usePostApi from 'hooks/usePostApi';
+import useForgotPassword from 'hooks/useForgotPassword';
 import ForgotPassword from './forgot-password';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-jest.mock('hooks/usePostApi');
+jest.mock('hooks/useForgotPassword');
 
-const mockUsePostApi = usePostApi as jest.MockedFunction<typeof usePostApi>;
+const mockUseForgotPassword = useForgotPassword as jest.MockedFunction<any>;
 
 describe('ForgotPassword', () => {
   it('renders a forgot password form', () => {
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: false,
-      _post: jest.fn(),
+    mockUseForgotPassword.mockImplementation(() => ({
+      mutate: jest.fn(),
+      isSuccess: false,
+      isError: false,
+      isPending: false,
     }));
     render(<ForgotPassword />);
 
@@ -41,11 +42,12 @@ describe('ForgotPassword', () => {
   });
 
   it('should not submit the form if the email field is empty', () => {
-    const _postMock = jest.fn();
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: false,
-      _post: _postMock,
+    const mockMutate = jest.fn();
+    mockUseForgotPassword.mockImplementation(() => ({
+      mutate: mockMutate,
+      isSuccess: false,
+      isError: false,
+      isPending: false,
     }));
 
     render(<ForgotPassword />);
@@ -55,14 +57,15 @@ describe('ForgotPassword', () => {
     });
     fireEvent.click(button);
 
-    expect(_postMock).not.toHaveBeenCalled();
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 
   it('should render alert if the api fails', () => {
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: true,
-      _post: jest.fn(),
+    mockUseForgotPassword.mockImplementation(() => ({
+      mutate: jest.fn(),
+      isSuccess: false,
+      isError: true,
+      isPending: false,
     }));
 
     render(<ForgotPassword />);
@@ -73,11 +76,12 @@ describe('ForgotPassword', () => {
   });
 
   it('should call the api after successful form submission', async () => {
-    const _postMock = jest.fn();
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: false,
-      _post: _postMock,
+    const mockMutate = jest.fn();
+    mockUseForgotPassword.mockImplementation(() => ({
+      mutate: mockMutate,
+      isSuccess: false,
+      isError: false,
+      isPending: false,
     }));
 
     render(<ForgotPassword />);
@@ -89,17 +93,18 @@ describe('ForgotPassword', () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(_postMock).toHaveBeenCalledWith('/api/auth/forgot-password', {
+      expect(mockMutate).toHaveBeenCalledWith({
         email: 'test@gmail.com',
       });
     });
   });
 
   it('should disable the button and render success alert after successful form submission', () => {
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: true,
-      apiError: false,
-      _post: jest.fn(),
+    mockUseForgotPassword.mockImplementation(() => ({
+      mutate: jest.fn(),
+      isSuccess: true,
+      isError: false,
+      isPending: false,
     }));
 
     render(<ForgotPassword />);

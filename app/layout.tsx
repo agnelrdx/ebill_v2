@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className={roboto.className} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="system"
           disableTransitionOnChange
         >
           <FloatingThemeSwitcher />
