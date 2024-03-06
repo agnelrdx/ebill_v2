@@ -20,14 +20,14 @@ import useForgotPassword from 'hooks/useForgotPassword';
 type CardProps = React.ComponentProps<typeof Card>;
 
 export default function ForgotPassword({ className, ...props }: CardProps) {
-  const { mutate, isSuccess, isError, isPending } = useForgotPassword();
-  const { handleSubmit, control, formState } = useForm<{ email: string }>({
+  const { mutate, isSuccess, isError, isPending, error } = useForgotPassword();
+  const { handleSubmit, control } = useForm<{ email: string }>({
     defaultValues: {
       email: '',
     },
   });
 
-  const onSubmit = async ({ email }: { email: string }) => {
+  const onSubmit = ({ email }: { email: string }) => {
     mutate({ email });
   };
 
@@ -77,7 +77,7 @@ export default function ForgotPassword({ className, ...props }: CardProps) {
         </Button>
         {isError && (
           <div className="alert__error" role="alert">
-            Email does not exist. Please try again.
+            {error?.message || 'Email does not exist. Please try again'}.
           </div>
         )}
         {isSuccess && (

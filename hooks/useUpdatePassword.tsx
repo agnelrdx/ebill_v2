@@ -1,15 +1,17 @@
 import { useMutation } from '@tanstack/react-query';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
-const useForgotPassword = () => {
+const useUpdatePassword = () => {
   const supabase = createClientComponentClient();
   const mutation = useMutation({
-    mutationFn: async ({ email }: { email: string }) => {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
+    mutationFn: async ({ password }: { password: string }) => {
+      const { data, error } = await supabase.auth.updateUser({
+        password,
       });
 
       if (error) throw new Error(error.message);
+
+      await supabase.auth.signOut();
 
       return data;
     },
@@ -18,4 +20,4 @@ const useForgotPassword = () => {
   return mutation;
 };
 
-export default useForgotPassword;
+export default useUpdatePassword;

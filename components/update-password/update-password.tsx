@@ -15,12 +15,12 @@ import {
 } from 'components/ui/card';
 import { Input } from 'components/ui/input';
 import { Button } from 'components/ui/button';
+import useUpdatePassword from 'hooks/useUpdatePassword';
 
 type CardProps = React.ComponentProps<typeof Card>;
 
 export default function UpdatePassword({ className, ...props }: CardProps) {
-  const apiSuccess = false;
-  const apiError = false;
+  const { mutate, isSuccess, isError, isPending, error } = useUpdatePassword();
   const { handleSubmit, control, formState, getValues } = useForm<{
     password: string;
     newPassword: string;
@@ -30,17 +30,9 @@ export default function UpdatePassword({ className, ...props }: CardProps) {
       newPassword: '',
     },
   });
-  const formSubmitted =
-    (formState.isSubmitting ||
-      formState.isLoading ||
-      formState.isSubmitSuccessful) &&
-    !apiError;
 
-  const onSubmit = async ({ newPassword }: { newPassword: string }) => {
-    // await _post('/api/auth/update-password', {
-    //   password: newPassword,
-    //   nonce: code!,
-    // });
+  const onSubmit = async ({ password }: { password: string }) => {
+    mutate({ password });
   };
 
   return (
@@ -67,7 +59,6 @@ export default function UpdatePassword({ className, ...props }: CardProps) {
                 ['border-red-500']: error,
               })}
               data-testid="password"
-              disabled={apiSuccess}
             />
           )}
           rules={{
@@ -89,7 +80,6 @@ export default function UpdatePassword({ className, ...props }: CardProps) {
                 ['border-red-500']: error,
               })}
               data-testid="newPassword"
-              disabled={apiSuccess}
             />
           )}
           rules={{
@@ -102,24 +92,21 @@ export default function UpdatePassword({ className, ...props }: CardProps) {
             },
           }}
         />
-        <Link href="/" className="text-sm inline-block mb-2 hover:underline">
-          Return to Login
-        </Link>
       </CardContent>
       <CardFooter className="flex-col">
         <Button
+          disabled={isPending || isSuccess}
           className="w-full"
-          disabled={formSubmitted || apiSuccess}
           onClick={handleSubmit(onSubmit)}
         >
-          {formSubmitted && !apiSuccess ? 'Loading...' : 'Update Password'}
+          {isPending ? 'Loading...' : 'Update Password'}
         </Button>
-        {apiError && (
+        {isError && (
           <div className="alert__error" role="alert">
-            System error. Please try again.
+            {error?.message || 'System error. Please try again'}.
           </div>
         )}
-        {apiSuccess && (
+        {isSuccess && (
           <div className="alert__success" role="alert">
             Password updated successfully. Please{' '}
             <Link href="/" className="inline-block hover:underline">

@@ -1,21 +1,22 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import usePostApi from 'hooks/usePostApi';
+import useUpdatePassword from 'hooks/useUpdatePassword';
 import UpdatePassword from './update-password';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-jest.mock('hooks/usePostApi');
+jest.mock('hooks/useUpdatePassword');
 
-const mockUsePostApi = usePostApi as jest.MockedFunction<typeof usePostApi>;
+const mockUseUpdatePassword = useUpdatePassword as jest.MockedFunction<any>;
 
 describe('UpdatePassword', () => {
   it('renders a update password form', () => {
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: false,
-      _post: jest.fn(),
+    mockUseUpdatePassword.mockImplementation(() => ({
+      mutate: jest.fn(),
+      isSuccess: false,
+      isError: false,
+      isPending: false,
     }));
     render(<UpdatePassword />);
 
@@ -27,9 +28,6 @@ describe('UpdatePassword', () => {
     );
     const password = screen.getByTestId('password');
     const newPassword = screen.getByTestId('newPassword');
-    const link = screen.getByRole('link', {
-      name: 'Return to Login',
-    });
     const button = screen.getByRole('button', {
       name: 'Update Password',
     });
@@ -38,16 +36,16 @@ describe('UpdatePassword', () => {
     expect(para).toBeInTheDocument();
     expect(password).toBeInTheDocument();
     expect(newPassword).toBeInTheDocument();
-    expect(link).toBeInTheDocument();
     expect(button).toBeInTheDocument();
   });
 
-  it('should not submit the form if the email field is empty', () => {
-    const _postMock = jest.fn();
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: false,
-      _post: _postMock,
+  it('should not submit the form if the field is empty', () => {
+    const mockMutate = jest.fn();
+    mockUseUpdatePassword.mockImplementation(() => ({
+      mutate: mockMutate,
+      isSuccess: false,
+      isError: false,
+      isPending: false,
     }));
 
     render(<UpdatePassword />);
@@ -57,14 +55,15 @@ describe('UpdatePassword', () => {
     });
     fireEvent.click(button);
 
-    expect(_postMock).not.toHaveBeenCalled();
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 
   it('should render alert if the api fails', () => {
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: true,
-      _post: jest.fn(),
+    mockUseUpdatePassword.mockImplementation(() => ({
+      mutate: jest.fn(),
+      isSuccess: false,
+      isError: true,
+      isPending: false,
     }));
 
     render(<UpdatePassword />);
@@ -75,11 +74,12 @@ describe('UpdatePassword', () => {
   });
 
   it('should call the api after successful form submission', async () => {
-    const _postMock = jest.fn();
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: false,
-      _post: _postMock,
+    const mockMutate = jest.fn();
+    mockUseUpdatePassword.mockImplementation(() => ({
+      mutate: mockMutate,
+      isSuccess: false,
+      isError: false,
+      isPending: false,
     }));
 
     render(<UpdatePassword />);
@@ -93,17 +93,18 @@ describe('UpdatePassword', () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(_postMock).toHaveBeenCalledWith('/api/auth/update-password', {
+      expect(mockMutate).toHaveBeenCalledWith({
         password: '!Hello123',
       });
     });
   });
 
   it('should disable the button and render success alert after successful form submission', () => {
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: true,
-      apiError: false,
-      _post: jest.fn(),
+    mockUseUpdatePassword.mockImplementation(() => ({
+      mutate: jest.fn(),
+      isSuccess: true,
+      isError: false,
+      isPending: false,
     }));
 
     render(<UpdatePassword />);
@@ -120,11 +121,12 @@ describe('UpdatePassword', () => {
   });
 
   it('should validate the password policy', async () => {
-    const _postMock = jest.fn();
-    mockUsePostApi.mockImplementation(() => ({
-      apiSuccess: false,
-      apiError: false,
-      _post: _postMock,
+    const mockMutate = jest.fn();
+    mockUseUpdatePassword.mockImplementation(() => ({
+      mutate: mockMutate,
+      isSuccess: false,
+      isError: false,
+      isPending: false,
     }));
 
     render(<UpdatePassword />);
@@ -141,7 +143,7 @@ describe('UpdatePassword', () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(_postMock).not.toHaveBeenCalled();
+      expect(mockMutate).not.toHaveBeenCalled();
     });
 
     // Upper case + lower case
@@ -151,7 +153,7 @@ describe('UpdatePassword', () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(_postMock).not.toHaveBeenCalled();
+      expect(mockMutate).not.toHaveBeenCalled();
     });
 
     // Upper case + lower case + special character
@@ -161,7 +163,7 @@ describe('UpdatePassword', () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(_postMock).not.toHaveBeenCalled();
+      expect(mockMutate).not.toHaveBeenCalled();
     });
 
     // Upper case + lower case + special character + numeric digit
@@ -171,7 +173,7 @@ describe('UpdatePassword', () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(_postMock).not.toHaveBeenCalled();
+      expect(mockMutate).not.toHaveBeenCalled();
     });
 
     // Upper case + lower case + special character + numeric digit + match confrim password + lower than 6 characters
@@ -181,7 +183,7 @@ describe('UpdatePassword', () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(_postMock).not.toHaveBeenCalled();
+      expect(mockMutate).not.toHaveBeenCalled();
     });
 
     // All validation passed
@@ -191,7 +193,7 @@ describe('UpdatePassword', () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(_postMock).toHaveBeenCalled();
+      expect(mockMutate).toHaveBeenCalled();
     });
   });
 });

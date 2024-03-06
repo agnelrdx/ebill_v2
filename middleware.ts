@@ -5,13 +5,16 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const homePaths = ['/', '/forgot-password'];
   const supabase = createMiddlewareClient({ req, res });
+  const protectedRoutes =
+    req.nextUrl.pathname.startsWith('/dashboard') ||
+    req.nextUrl.pathname === '/update-password';
 
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
   // Redirect to login is session is expired or logged out.
-  if (req.nextUrl.pathname.startsWith('/dashboard') && !session) {
+  if (protectedRoutes && !session) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
