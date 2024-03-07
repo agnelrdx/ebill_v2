@@ -4,6 +4,7 @@ import { Roboto } from 'next/font/google';
 import QueryProvider from 'utils/query-provider';
 import { ThemeProvider } from 'components/ui/theme-provider';
 import FloatingThemeSwitcher from 'components/ui/floating-theme-switcher';
+import { Toaster } from 'components/ui/toaster';
 import './globals.css';
 
 const roboto = Roboto({
@@ -31,6 +32,7 @@ export default function RootLayout({
         >
           <FloatingThemeSwitcher />
           <QueryProvider>{children}</QueryProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

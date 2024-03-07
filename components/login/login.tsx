@@ -111,10 +111,10 @@ export default function Login({ className, ...props }: CardProps) {
       <CardFooter className="flex-col">
         <Button
           className="w-full"
-          disabled={isPending}
+          disabled={isPending || isSuccess}
           onClick={handleSubmit(onSubmit)}
         >
-          {isPending ? 'Loading...' : 'Login'}
+          {isPending || isSuccess ? 'Loading...' : 'Login'}
         </Button>
         {isError && (
           <div className="alert__error" role="alert">

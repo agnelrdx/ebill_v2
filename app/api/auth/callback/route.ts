@@ -9,6 +9,14 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = createRouteHandlerClient({ cookies });
     await supabase.auth.exchangeCodeForSession(code);
+    cookies().set({
+      name: 'update-password-redirect',
+      value: code,
+      httpOnly: true,
+      path: '/',
+      secure: true,
+      maxAge: 60 * 5,
+    });
   }
 
   return NextResponse.redirect(`${requestUrl.origin}/update-password`);

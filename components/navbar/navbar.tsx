@@ -40,25 +40,25 @@ const Navbar = ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => {
             Overview
           </Link>
           <Link
-            href="/examples/dashboard"
+            href="/dashboard/users"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
             Users
           </Link>
           <Link
-            href="/examples/dashboard"
+            href="/dashboard/customers"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
             Customers
           </Link>
           <Link
-            href="/examples/dashboard"
+            href="/dashboard/products"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
             Products
           </Link>
           <Link
-            href="/examples/dashboard"
+            href="/dashboard/billing"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
             Billing

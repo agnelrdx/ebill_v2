@@ -77,7 +77,7 @@ export default function ForgotPassword({ className, ...props }: CardProps) {
         </Button>
         {isError && (
           <div className="alert__error" role="alert">
-            {error?.message || 'Email does not exist. Please try again'}.
+            {error?.message || 'Email does not exist. Please try again.'}
           </div>
         )}
         {isSuccess && (

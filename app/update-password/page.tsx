@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import UpdatePassword from 'components/update-password/update-password';
 
 export const metadata: Metadata = {
@@ -9,6 +10,10 @@ export const metadata: Metadata = {
 
 export default async function UpdatePasswordPage() {
   const year = new Date().getFullYear();
+  const cookiesList = cookies();
+  const isValidRedirection = cookiesList.get('update-password-redirect');
+
+  if (!isValidRedirection) redirect(`/`);
 
   return (
     <main>

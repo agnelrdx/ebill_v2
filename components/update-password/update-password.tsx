@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
 import classnames from 'classnames';
+import { useRouter } from 'next/navigation';
 
 import { VALID_PASSWORD_REGEX, cn } from 'utils';
 import {
@@ -15,11 +17,14 @@ import {
 } from 'components/ui/card';
 import { Input } from 'components/ui/input';
 import { Button } from 'components/ui/button';
+import { useToast } from 'components/ui/use-toast';
 import useUpdatePassword from 'hooks/useUpdatePassword';
 
 type CardProps = React.ComponentProps<typeof Card>;
 
 export default function UpdatePassword({ className, ...props }: CardProps) {
+  const { toast } = useToast();
+  const router = useRouter();
   const { mutate, isSuccess, isError, isPending, error } = useUpdatePassword();
   const { handleSubmit, control, formState, getValues } = useForm<{
     password: string;
@@ -30,6 +35,21 @@ export default function UpdatePassword({ className, ...props }: CardProps) {
       newPassword: '',
     },
   });
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (isSuccess) {
+      toast({
+        title: 'You will be redirected to home page soon!',
+        duration: 5000,
+      });
+      timer = setTimeout(() => {
+        router.push('/');
+      }, 8000);
+    }
+    () => clearTimeout(timer);
+  }, [isSuccess, router, toast]);
 
   const onSubmit = async ({ password }: { password: string }) => {
     mutate({ password });
@@ -103,7 +123,7 @@ export default function UpdatePassword({ className, ...props }: CardProps) {
         </Button>
         {isError && (
           <div className="alert__error" role="alert">
-            {error?.message || 'System error. Please try again'}.
+            {error?.message || 'System error. Please try again.'}
           </div>
         )}
         {isSuccess && (
