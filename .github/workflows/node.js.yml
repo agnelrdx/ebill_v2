@@ -1,5 +1,5 @@
 name: Pull request checks
-
+uses: patriknyblad/add-pr-checks@v1.1.0
 on:
   pull_request:
     branches: ['main']
