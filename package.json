@@ -10,7 +10,8 @@
     "test:ci": "jest --ci",
     "db:local:migrate": "npx dotenv -e .env.local -- prisma migrate dev",
     "db:prod:migrate": "npx dotenv -e .env.production -- prisma migrate dev",
-    "db:local:seed": "npx dotenv -e .env.local -- node prisma/seed.js"
+    "db:local:seed": "npx dotenv -e .env.local -- node prisma/seed.js",
+    "db:prod:seed": "npx dotenv -e .env.production -- node prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^5.11.0",
